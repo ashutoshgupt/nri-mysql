@@ -1,0 +1,52 @@
+name: Publish artifacts
+
+on:
+  # workflow_run:
+  #   workflows: ["Prerelease pipeline"]
+  #   types:
+  #     - completed
+  push:
+    branches:
+    - s3_publish_packages
+
+env:
+  REPO_FULL_NAME: ${{ github.event.repository.full_name }}
+  ORIGINAL_REPO_NAME: "newrelic/nri-mysql"
+  AWS_S3_BUCKET: newrelic-test-20200121
+
+jobs:
+  publish-to-s3:
+    # make sure the workflow "prerelease" concluded successfully
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    name: Send release assets to S3
+    runs-on: ubuntu-20.04
+    env:
+      GOPATH: ${{ github.workspace }}
+      DOCKER_HUB_ID: ${{ secrets.OHAI_DOCKER_HUB_ID }}
+      DOCKER_HUB_PASSWORD: ${{ secrets.OHAI_DOCKER_HUB_PASSWORD }
+      GPG_KEY_NAME: 'infrastructure-eng@newrelic.com'
+      GPG_PRIVATE_KEY_BASE64: ${{ OHAI_GPG_PRIVATE_KEY_BASE64 }
+      GPG_PASSPHRASE: ${{ secrets.OHAI_GPG_PASSPHRASE }
+    # defaults:
+    #   run:
+    #     working-directory: src/github.com/${{env.ORIGINAL_REPO_NAME}}
+    steps:
+      - name: Get the codez
+        uses: actions/checkout@v2
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ env.DOCKER_HUB_ID }}
+          password: ${{ env.DOCKER_HUB_PASSWORD }}
+      - name: Publish to S3 action
+        uses: ./actions/publish
+        with:
+          aws_secret_access_key: ${{ secrets.TEMP_AWS_SECRET_ACCESS_KEY }}
+          aws_access_key: ${{ secrets.TEMP_AWS_ACCESS_KEY }}
+          aws_s3_bucket_name: ${{ env.AWS_S3_BUCKET }}
+          tag: "v9.9.9"
+          app_name: "nri-mysql"
+          repo_name: "newrelic/nri-mysql"
+          # 'ohi' is for integrations
+          schema: "ohi"
+ 
