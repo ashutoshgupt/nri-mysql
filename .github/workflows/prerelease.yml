@@ -175,42 +175,40 @@ jobs:
           slack-channel: ${{ secrets.COREINT_SLACK_CHANNEL }}
           slack-text: "❌ `${{ env.REPO_FULL_NAME }}`: prerelease pipeline failed."
 
-
-  # in theory we could put this in a different workflow, but that would that workflow to be in master to be activated
-  # so we put this in a job in this workflow so we can be triggered without being merged
   publish-to-s3:
-    # make sure the workflow "prerelease" concluded successfully
-    #if: ${{ github.event.workflow_run.conclusion == 'success' }}
     name: Send release assets to S3
     runs-on: ubuntu-20.04
     needs: [package-win]
-    env:
-      DOCKER_HUB_ID: ${{ secrets.OHAI_DOCKER_HUB_ID }}
-      DOCKER_HUB_PASSWORD: ${{ secrets.OHAI_DOCKER_HUB_PASSWORD }}
-      GPG_KEY_NAME: 'infrastructure-eng@newrelic.com'
-      GPG_PRIVATE_KEY_BASE64: ${{ secrets.OHAI_GPG_PRIVATE_KEY_BASE64 }}
-      GPG_PASSPHRASE: ${{ secrets.OHAI_GPG_PASSPHRASE }}
-    # defaults:
-    #   run:
-    #     working-directory: src/github.com/${{env.ORIGINAL_REPO_NAME}}
     steps:
-      - name: Get the codez
-        uses: actions/checkout@v2
       - name: Login to DockerHub
         uses: docker/login-action@v1
         with:
-          username: ${{ env.DOCKER_HUB_ID }}
-          password: ${{ env.DOCKER_HUB_PASSWORD }}
+          username: ${{ secrets.OHAI_DOCKER_HUB_ID }}
+          password: ${{ secrets.OHAI_DOCKER_HUB_PASSWORD }}
       - name: Publish to S3 action
-        uses: ./actions/publish
+        uses: newrelic/infrastructure-publish-action@main
+        env:
+          # changeme
+          AWS_S3_BUCKET: newrelic-test-20200121
+          AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          # note: the key name might not be required since we only import one into the keyring
+          GPG_KEY_NAME: ${{ secrets.GPG_KEY_NAME }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          GPG_PRIVATE_KEY_BASE64: ${{ secrets.GPG_PRIVATE_KEY_BASE64 }}
         with:
-          # careful with the access_keys used as it can inadvertently publish to where we don't want, 
-          # especially if the bucket name is "common" enough that it can already be used for something else
-          aws_secret_access_key: ${{ secrets.TEMP_AWS_SECRET_ACCESS_KEY }}
-          aws_access_key: ${{ secrets.TEMP_AWS_ACCESS_KEY }}
-          aws_s3_bucket_name: ${{ env.AWS_S3_BUCKET }}
-          tag: ${{ env.TAG }}
-          app_name: "nri-mysql"
-          repo_name: "newrelic/nri-mysql"
+          tag: ${{env.TAG}}
+          app_name: "nri-${{env.INTEGRATION}}"
+          repo_name: ${{ env.ORIGINAL_REPO_NAME }}
           # 'ohi' is for integrations
           schema: "ohi"
+          # careful with the access_keys used as it can inadvertently publish to where we don't want, 
+          # especially if the bucket name is "common" enough that it can already be used for something else
+          # note: seems like using secrets here directly seems to fail for some cases
+          aws_access_key: ${{ env.AWS_ACCESS_KEY }}
+          aws_secret_access_key: ${{ env.AWS_SECRET_ACCESS_KEY }}
+          aws_s3_bucket_name: ${{ env.AWS_S3_BUCKET }}
+          # used for signing package stuff
+          gpg_key_name: ${{ env.GPG_KEY_NAME }}
+          gpg_passphrase: ${{ env.GPG_PASSPHRASE }}
+          gpg_private_key_base64: ${{ env.GPG_PRIVATE_KEY_BASE64 }}
