@@ -190,12 +190,12 @@ jobs:
         env:
           # changeme
           AWS_S3_BUCKET: newrelic-test-20200121
-          AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_ACCESS_KEY: ${{ secrets.TEMP_AWS_ACCESS_KEY }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.TEMP_AWS_SECRET_ACCESS_KEY }}
           # note: the key name might not be required since we only import one into the keyring
           # GPG_KEY_NAME: ${{ secrets.GPG_KEY_NAME }}
-          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-          GPG_PRIVATE_KEY_BASE64: ${{ secrets.GPG_PRIVATE_KEY_BASE64 }}
+          GPG_PASSPHRASE: ${{ secrets.TEMP_GPG_PASSPHRASE }}
+          GPG_PRIVATE_KEY_BASE64: ${{ secrets.TEMP_GPG_PRIVATE_KEY_BASE64 }}
         with:
           tag: ${{env.TAG}}
           app_name: "nri-${{env.INTEGRATION}}"
