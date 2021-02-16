@@ -186,14 +186,14 @@ jobs:
           username: ${{ secrets.OHAI_DOCKER_HUB_ID }}
           password: ${{ secrets.OHAI_DOCKER_HUB_PASSWORD }}
       - name: Publish to S3 action
-        uses: newrelic/infrastructure-publish-action@main
+        uses: newrelic/infrastructure-publish-action@arvdias/remove-gpg-key-name
         env:
           # changeme
           AWS_S3_BUCKET: newrelic-test-20200121
           AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           # note: the key name might not be required since we only import one into the keyring
-          GPG_KEY_NAME: ${{ secrets.GPG_KEY_NAME }}
+          # GPG_KEY_NAME: ${{ secrets.GPG_KEY_NAME }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
           GPG_PRIVATE_KEY_BASE64: ${{ secrets.GPG_PRIVATE_KEY_BASE64 }}
         with:
@@ -209,6 +209,6 @@ jobs:
           aws_secret_access_key: ${{ env.AWS_SECRET_ACCESS_KEY }}
           aws_s3_bucket_name: ${{ env.AWS_S3_BUCKET }}
           # used for signing package stuff
-          gpg_key_name: ${{ env.GPG_KEY_NAME }}
+          # gpg_key_name: ${{ env.GPG_KEY_NAME }}
           gpg_passphrase: ${{ env.GPG_PASSPHRASE }}
           gpg_private_key_base64: ${{ env.GPG_PRIVATE_KEY_BASE64 }}
