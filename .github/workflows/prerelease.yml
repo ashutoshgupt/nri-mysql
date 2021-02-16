@@ -186,7 +186,7 @@ jobs:
           username: ${{ secrets.OHAI_DOCKER_HUB_ID }}
           password: ${{ secrets.OHAI_DOCKER_HUB_PASSWORD }}
       - name: Publish to S3 action
-        uses: newrelic/infrastructure-publish-action@arvdias/remove-gpg-key-name
+        uses: newrelic/infrastructure-publish-action@main
         env:
           AWS_S3_BUCKET: <replace-with-real-bucket>
           AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
