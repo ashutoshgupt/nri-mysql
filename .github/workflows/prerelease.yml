@@ -189,10 +189,6 @@ jobs:
         uses: newrelic/infrastructure-publish-action@arvdias/test-optimizations
         env:
           AWS_S3_BUCKET: nr-downloads
-          AWS_ACCESS_KEY_ID: ${{ secrets.TEMP_AWS_ACCESS_KEY }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.TEMP_AWS_SECRET_ACCESS_KEY }}
-          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-          GPG_PRIVATE_KEY_BASE64: ${{ secrets.GPG_PRIVATE_KEY_BASE64 }}
         with:
           # got to find a way to make prod release
           env: pre-release
@@ -204,9 +200,9 @@ jobs:
           # careful with the access_keys used as it can inadvertently publish to where we don't want, 
           # especially if the bucket name is "common" enough that it can already be used for something else
           # note: seems like using secrets here directly seems to fail for some cases
-          aws_access_key: ${{ env.AWS_ACCESS_KEY_ID }}
-          aws_secret_access_key: ${{ env.AWS_SECRET_ACCESS_KEY }}
+          aws_access_key: ${{ secrets.TEMP_AWS_ACCESS_KEY }}
+          aws_secret_access_key: ${{ secrets.TEMP_AWS_SECRET_ACCESS_KEY }}
           aws_s3_bucket_name: ${{ env.AWS_S3_BUCKET }}
           # used for signing package stuff
-          gpg_passphrase: ${{ env.GPG_PASSPHRASE }}
-          gpg_private_key_base64: ${{ env.GPG_PRIVATE_KEY_BASE64 }}
+          gpg_passphrase: ${{ secrets.OHAI_GPG_PASSPHRASE }}
+          gpg_private_key_base64: ${{ env.OHAI_GPG_PRIVATE_KEY_BASE64 }}
