@@ -189,6 +189,7 @@ jobs:
         uses: newrelic/infrastructure-publish-action@arvdias/test-optimizations
         env:
           AWS_S3_BUCKET: nr-downloads
+          WORKDIR: /home/gha
         with:
           # got to find a way to make prod release
           env: pre-release
