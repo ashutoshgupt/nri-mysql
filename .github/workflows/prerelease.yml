@@ -205,4 +205,4 @@ jobs:
           aws_s3_bucket_name: ${{ env.AWS_S3_BUCKET }}
           # used for signing package stuff
           gpg_passphrase: ${{ secrets.OHAI_GPG_PASSPHRASE }}
-          gpg_private_key_base64: ${{ env.OHAI_GPG_PRIVATE_KEY_BASE64 }}
+          gpg_private_key_base64: ${{ secrets.OHAI_GPG_PRIVATE_KEY_BASE64 }}
